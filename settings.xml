@@ -43,8 +43,16 @@
       <id>myproxy</id>
       <active>true</active>
       <protocol>http</protocol>
-      <host>${java.myprox}</host>
-      <port>8080</port>
+      <host>CUSTOM_PROXY_HOST</host>
+      <port>CUSTOM_PROXY_PORT</port>
+ 
+    </proxy>
+        <proxy>
+      <id>myproxy2</id>
+      <active>true</active>
+      <protocol>https</protocol>
+      <host>CUSTOM_PROXY_HOST</host>
+      <port>CUSTOM_PROXY_PORT</port>
  
     </proxy>
   </proxies>
