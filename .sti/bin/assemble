@@ -16,6 +16,32 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
 
 ## The proxy config to be injected into /home/jboss/.m2/settings.xml 
 ## won't be injected if CUSTOM_PROXY_PORT and CUSTOM_PROXY_HOST are not present
+##   "source": {
+##             "type": "Git",
+##             "git": {
+##                "uri": "https://github.com/ivanthelad/openshift-jee-sample.git"
+##            }
+##         },
+##         "strategy": {
+##             "type": "Source",
+##             "sourceStrategy": {
+##                 "from": {
+                    "kind": "ImageStreamTag",
+                    "namespace": "openshift",
+                    "name": "jboss-eap6-openshift:6.4"
+##                 },
+##                 "env": [
+##                     {
+##                         "name": "CUSTOM_PROXY_HOST",
+##                         "value": "heheheh"
+##                    },
+##                     {
+##                         "name": "CUSTOM_PROXY_PORT",
+##                         "value": "heheheh"
+##                     }
+ ##                ]
+ ##            }
+
  CONTENT="<proxies> 
     <proxy>
       <id>myproxy</id>
