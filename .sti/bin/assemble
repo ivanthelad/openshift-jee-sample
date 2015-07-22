@@ -31,7 +31,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
   sed -i  --  "s/CUSTOM_PROXY_PORT/${CUSTOM_PROXY_PORT}/" $LOCAL_SOURCE_DIR/settings.xml
    sed -i  --  "s/CUSTOM_PROXY_HOST/${CUSTOM_PROXY_HOST}/"  $LOCAL_SOURCE_DIR/settings.xml
-   cp $LOCAL_SOURCE_DIR/settings.xml $JBOSS_HOME/.m2/settings.xml
+   cp $LOCAL_SOURCE_DIR/settings.xml /home/jboss/.m2/settings.xml
 
    echo "using maven config"
    cat  $LOCAL_SOURCE_DIR/settings.xml 
