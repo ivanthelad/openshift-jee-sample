@@ -33,7 +33,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
    sed -i  --  's/CUSTOM_PROXY_HOST/${CUSTOM_PROXY_HOST}/'  $LOCAL_SOURCE_DIR/settings.xml
 
    echo "using maven config"
-   cat  $LOCAL_SOURCE_DIR/.sti/bin/settings.xml 
+   cat  $LOCAL_SOURCE_DIR/settings.xml 
 
   if [ -z "$MAVEN_ARGS" ]; then
     export MAVEN_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -s $LOCAL_SOURCE_DIR/settings.xml -X"
