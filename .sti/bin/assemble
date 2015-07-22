@@ -29,8 +29,8 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
-  sed -i  --  's/CUSTOM_PROXY_PORT/$CUSTOM_PROXY_PORT/'  $LOCAL_SOURCE_DIR/settings.xml
-   sed -i  --  's/CUSTOM_PROXY_HOST/$CUSTOM_PROXY_HOST/'  $LOCAL_SOURCE_DIR/settings.xml
+  sed -i  --  's/CUSTOM_PROXY_PORT/${CUSTOM_PROXY_PORT}/'  $LOCAL_SOURCE_DIR/settings.xml
+   sed -i  --  's/CUSTOM_PROXY_HOST/${CUSTOM_PROXY_HOST}/'  $LOCAL_SOURCE_DIR/settings.xml
 
    echo "using maven config"
    cat  $LOCAL_SOURCE_DIR/.sti/bin/settings.xml 
