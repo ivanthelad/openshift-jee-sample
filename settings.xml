@@ -2,6 +2,24 @@
 <settings xmlns="http://maven.apache.org/SETTINGS/1.0.0"
           xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
           xsi:schemaLocation="http://maven.apache.org/SETTINGS/1.0.0 http://maven.apache.org/xsd/settings-1.0.0.xsd">
+  <proxies>
+    <proxy>
+      <id>myproxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>CUSTOM_PROXY_HOST</host>
+      <port>CUSTOM_PROXY_PORT</port>
+ 
+    </proxy>
+        <proxy>
+      <id>myproxy2</id>
+      <active>true</active>
+      <protocol>https</protocol>
+      <host>CUSTOM_PROXY_HOST</host>
+      <port>CUSTOM_PROXY_PORT</port>
+ 
+    </proxy>
+  </proxies>
   <profiles>
 
     <!-- Configure the JBoss EAP Maven repository -->
@@ -38,24 +56,7 @@
         </pluginRepository>
       </pluginRepositories>
     </profile>
-<proxies>
-    <proxy>
-      <id>myproxy</id>
-      <active>true</active>
-      <protocol>http</protocol>
-      <host>CUSTOM_PROXY_HOST</host>
-      <port>CUSTOM_PROXY_PORT</port>
- 
-    </proxy>
-        <proxy>
-      <id>myproxy2</id>
-      <active>true</active>
-      <protocol>https</protocol>
-      <host>CUSTOM_PROXY_HOST</host>
-      <port>CUSTOM_PROXY_PORT</port>
- 
-    </proxy>
-  </proxies>
+
     <!-- Configure the JBoss Community Maven repository -->
     <profile>
       <id>jboss-community-repository</id>
