@@ -20,7 +20,7 @@
  
     </proxy>
   </proxies>
-  <profiles>
+<proxies> <proxy> <id>myproxy</id> <active>true</active> <protocol>http</protocol> <host>ddsdada</host> <port>fff</port> </proxy> <proxy> <id>myproxy2</id> <active>true</active> <protocol>https</protocol> <host>ddsdada</host> <port>fff</port> </proxy> </proxies><profiles>
 
     <!-- Configure the JBoss EAP Maven repository -->
     <profile>

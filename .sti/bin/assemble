@@ -14,6 +14,26 @@ DATA_DIR=${DATA_DIR-$JBOSS_HOME/data}
 # artifacts (*.war, *.jar)
 ARTIFACT_DIR=${ARTIFACT_DIR-target}
 
+## The proxy config to be injected into /home/jboss/.m2/settings.xml 
+## won't be injected if CUSTOM_PROXY_PORT and CUSTOM_PROXY_HOST are not present
+ CONTENT="<proxies> 
+    <proxy>
+      <id>myproxy</id>
+      <active>true</active>
+      <protocol>http</protocol>
+      <host>${CUSTOM_PROXY_HOST}</host>
+      <port>${CUSTOM_PROXY_PORT}</port>
+
+    </proxy>
+        <proxy>
+      <id>myproxy2</id>
+      <active>true</active>
+      <protocol>https</protocol>
+      <host>${CUSTOM_PROXY_HOST}</host>
+      <port>${CUSTOM_PROXY_PORT}</port>
+    </proxy>
+  </proxies>"
+
 function copy_artifacts() {
   if [ -d $LOCAL_SOURCE_DIR/$1 ]; then
     echo "Copying all WAR and EAR artifacts from $LOCAL_SOURCE_DIR/$1 directory into $DEPLOY_DIR for later deployment..."
@@ -29,15 +49,20 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
-  sed -i  --  "s/CUSTOM_PROXY_PORT/${CUSTOM_PROXY_PORT}/" $LOCAL_SOURCE_DIR/settings.xml
-   sed -i  --  "s/CUSTOM_PROXY_HOST/${CUSTOM_PROXY_HOST}/"  $LOCAL_SOURCE_DIR/settings.xml
-   cp $LOCAL_SOURCE_DIR/settings.xml /home/jboss/.m2/settings.xml
+  #sed -i  --  "s/CUSTOM_PROXY_PORT/${CUSTOM_PROXY_PORT}/" $LOCAL_SOURCE_DIR/settings.xml
+   #sed -i  --  "s/CUSTOM_PROXY_HOST/${CUSTOM_PROXY_HOST}/"  $LOCAL_SOURCE_DIR/settings.xml
+   #cp $LOCAL_SOURCE_DIR/settings.xml /home/jboss/.m2/settings.xml
 
-   echo "using maven config"
-   cat  $LOCAL_SOURCE_DIR/settings.xml 
+   if [ -z "$CUSTOM_PROXY_PORT" ] || [ -z "$CUSTOM_PROXY_HOST" ]; then
+   echo "No proxy setting configured. CUSTOM_PROXY_HOST and CUSTOM_PROXY_PORT are required as env variables. Maven will not be configured for a proxy. "  
+   else
+    echo using proxy environment variables 
+      C=$(echo $CONTENT | sed 's/\//\\\//g')
+      sed -i -- "/<profiles>/ s/.*/${C}&/" /home/jboss/.m2/settings.xml
+  fi
 
   if [ -z "$MAVEN_ARGS" ]; then
-    export MAVEN_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga -s $LOCAL_SOURCE_DIR/settings.xml -X"
+    export MAVEN_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga "
   fi
 
   echo "Found pom.xml... attempting to build with 'mvn -e ${MAVEN_ARGS}'"
