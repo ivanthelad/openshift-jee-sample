@@ -4,45 +4,11 @@
 LOCAL_SOURCE_DIR=${HOME}/source
 mkdir -p $LOCAL_SOURCE_DIR
 
-# Resulting WAR files will be deployed to /opt/eap/standalone/deployments
-DEPLOY_DIR=$JBOSS_HOME/standalone/deployments
+DEPLOY_DIR=$JWS_HOME/webapps
 
-# JBoss AS data dir. Can be overridden.
-DATA_DIR=${DATA_DIR-$JBOSS_HOME/data}
-
-# the subdirectory within LOCAL_SOURCE_DIR from where we should copy build
-# artifacts (*.war, *.jar)
+# the subdirectory within LOCAL_SOURCE_DIR from where we should copy build artifacts
 ARTIFACT_DIR=${ARTIFACT_DIR-target}
-
-## The proxy config to be injected into /home/jboss/.m2/settings.xml 
-## won't be injected if CUSTOM_PROXY_PORT and CUSTOM_PROXY_HOST are not present
-##   "source": {
-##             "type": "Git",
-##             "git": {
-##                "uri": "https://github.com/ivanthelad/openshift-jee-sample.git"
-##            }
-##         },
-##         "strategy": {
-##             "type": "Source",
-##             "sourceStrategy": {
-##                 "from": {
-                    "kind": "ImageStreamTag",
-                    "namespace": "openshift",
-                    "name": "jboss-eap6-openshift:6.4"
-##                 },
-##                 "env": [
-##                     {
-##                         "name": "CUSTOM_PROXY_HOST",
-##                         "value": "heheheh"
-##                    },
-##                     {
-##                         "name": "CUSTOM_PROXY_PORT",
-##                         "value": "heheheh"
-##                     }
- ##                ]
- ##            }
-
- CONTENT="<proxies> 
+CONTENT="<proxies> 
     <proxy>
       <id>myproxy</id>
       <active>true</active>
@@ -62,8 +28,8 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
 
 function copy_artifacts() {
   if [ -d $LOCAL_SOURCE_DIR/$1 ]; then
-    echo "Copying all WAR and EAR artifacts from $LOCAL_SOURCE_DIR/$1 directory into $DEPLOY_DIR for later deployment..."
-    cp -v $LOCAL_SOURCE_DIR/$1/*.jar $LOCAL_SOURCE_DIR/$1/*.war $LOCAL_SOURCE_DIR/$1/*.ear $DEPLOY_DIR 2> /dev/null
+    echo "Copying all WAR artifacts from $LOCAL_SOURCE_DIR/$1 directory into $DEPLOY_DIR for later deployment..."
+    cp -v $LOCAL_SOURCE_DIR/$1/*.war $DEPLOY_DIR 2> /dev/null
   fi
 }
 
@@ -72,13 +38,8 @@ cp -ad /tmp/src/* $LOCAL_SOURCE_DIR
 
 # If a pom.xml is present, this is a normal build scenario
 # so run maven.
-
 if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   pushd $LOCAL_SOURCE_DIR &> /dev/null
-  #sed -i  --  "s/CUSTOM_PROXY_PORT/${CUSTOM_PROXY_PORT}/" $LOCAL_SOURCE_DIR/settings.xml
-   #sed -i  --  "s/CUSTOM_PROXY_HOST/${CUSTOM_PROXY_HOST}/"  $LOCAL_SOURCE_DIR/settings.xml
-   #cp $LOCAL_SOURCE_DIR/settings.xml /home/jboss/.m2/settings.xml
-
    if [ -z "$CUSTOM_PROXY_PORT" ] || [ -z "$CUSTOM_PROXY_HOST" ]; then
    echo "No proxy setting configured. CUSTOM_PROXY_HOST and CUSTOM_PROXY_PORT are required as env variables. Maven will not be configured for a proxy. "  
    else
@@ -88,12 +49,13 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   fi
 
   if [ -z "$MAVEN_ARGS" ]; then
-    export MAVEN_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga "
+    export MAVEN_ARGS="package -Popenshift -DskipTests -Dcom.redhat.xpaas.repo.redhatga"
   fi
 
   echo "Found pom.xml... attempting to build with 'mvn -e ${MAVEN_ARGS}'"
 
-  echo "Using $(mvn --version)"
+  echo "Maven version:"
+  mvn --version
 
   # Execute the actual build
   mvn -e $MAVEN_ARGS
@@ -105,21 +67,11 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
   fi
 
   # Copy built artifacts (if any!) from the target/ directory
-  # (or $ARTIFACT_DIR if specified)
-  # to the $JBOSS_HOME/standalone/deployments/ directory for
-  # later deployment
+  # to the $DEPLOY_DIR directory for later deployment
   copy_artifacts "$ARTIFACT_DIR"
 
-  # copy app data, if specified
-  if [ -n "${APP_DATADIR+_}" ] && [ -d "$LOCAL_SOURCE_DIR/$APP_DATADIR" ]; then
-    echo "Copying app data to $DATA_DIR..."
-    src="$LOCAL_SOURCE_DIR/$APP_DATADIR"
-    [ -d "$DATA_DIR" ] && src="$src/*" # avoid glob if possible
-    cp -av "$src" "$DATA_DIR"
-  fi
-
   # clean up after maven
-  mvn -e -Dcom.redhat.xpaas.repo.redhatga clean
+  mvn clean
   if [ -d "$HOME/.m2/repository" ]; then
     rm -r "$HOME/.m2/repository"
   fi
@@ -128,18 +80,10 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 fi
 
 # Copy (probably binary) artifacts from the deployments/
-# directory to the $JBOSS_HOME/standalone/deployments/
-# directory for later deployment
+# directory to the $DEPLOY_DIR directory for later deployment
 copy_artifacts "deployments"
 
 if [ -d $LOCAL_SOURCE_DIR/configuration ]; then
   echo "Copying config files from project..."
-  cp -v $LOCAL_SOURCE_DIR/configuration/* $JBOSS_HOME/standalone/configuration/
+  cp -v $LOCAL_SOURCE_DIR/configuration/* $JWS_HOME/conf/
 fi
-
-if [ -d $LOCAL_SOURCE_DIR/modules ]; then
-  echo "Copying modules from project..."
-  cp -vr $LOCAL_SOURCE_DIR/modules/* $JBOSS_HOME/modules/
-fi
-
-exit 0
