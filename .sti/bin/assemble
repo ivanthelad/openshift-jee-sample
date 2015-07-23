@@ -72,9 +72,9 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
 
   # clean up after maven
   mvn clean
-  if [ -d "$HOME/.m2/repository" ]; then
-    rm -r "$HOME/.m2/repository"
-  fi
+ # if [ -d "$HOME/.m2/repository" ]; then
+  #  rm -r "$HOME/.m2/repository"
+  #fi
 
   popd &> /dev/null
 fi
