@@ -49,6 +49,8 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
       <protocol>http</protocol>
       <host>${CUSTOM_PROXY_HOST}</host>
       <port>${CUSTOM_PROXY_PORT}</port>
+       <password>${CUSTOM_PROXY_PASSWORD}</password>
+       <username>${CUSTOM_PROXY_USER}</username>
 
     </proxy>
         <proxy>
@@ -57,6 +59,8 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
       <protocol>https</protocol>
       <host>${CUSTOM_PROXY_HOST}</host>
       <port>${CUSTOM_PROXY_PORT}</port>
+       <password>${CUSTOM_PROXY_PASSWORD}</password>
+       <username>${CUSTOM_PROXY_USER}</username>
     </proxy>
   </proxies>"
 
