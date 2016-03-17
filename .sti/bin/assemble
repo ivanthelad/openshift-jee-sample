@@ -14,7 +14,7 @@ DATA_DIR=${DATA_DIR-$JBOSS_HOME/data}
 # artifacts (*.war, *.jar)
 ARTIFACT_DIR=${ARTIFACT_DIR-target}
 
-## The proxy config to be injected into /home/jboss/.m2/settings.xml 
+## The proxy config to be injected into /home/jboss/.m2/settings.xml
 ## won't be injected if CUSTOM_PROXY_PORT and CUSTOM_PROXY_HOST are not present
 ##   "source": {
 ##             "type": "Git",
@@ -26,9 +26,9 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
 ##             "type": "Source",
 ##             "sourceStrategy": {
 ##                 "from": {
-                    "kind": "ImageStreamTag",
-                    "namespace": "openshift",
-                    "name": "jboss-eap6-openshift:6.4"
+##                    "kind": "ImageStreamTag",
+##                    "namespace": "openshift",
+##                    "name": "jboss-eap6-openshift:6.4"
 ##                 },
 ##                 "env": [
 ##                     {
@@ -42,7 +42,7 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
  ##                ]
  ##            }
 
- CONTENT="<proxies> 
+ CONTENT="
     <proxy>
       <id>myproxy</id>
       <active>true</active>
@@ -62,7 +62,7 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
        <password>${CUSTOM_PROXY_PASSWORD}</password>
        <username>${CUSTOM_PROXY_USER}</username>
     </proxy>
-  </proxies>"
+  "
 
 function copy_artifacts() {
   if [ -d $LOCAL_SOURCE_DIR/$1 ]; then
@@ -84,11 +84,12 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
    #cp $LOCAL_SOURCE_DIR/settings.xml /home/jboss/.m2/settings.xml
 
    if [ -z "$CUSTOM_PROXY_PORT" ] || [ -z "$CUSTOM_PROXY_HOST" ]; then
-   echo "No proxy setting configured. CUSTOM_PROXY_HOST and CUSTOM_PROXY_PORT are required as env variables. Maven will not be configured for a proxy. "  
+   echo "No proxy setting configured. CUSTOM_PROXY_HOST and CUSTOM_PROXY_PORT are required as env variables. Maven will not be configured for a proxy. "
    else
-    echo using proxy environment variables 
+    echo using proxy environment variables
       C=$(echo $CONTENT | sed 's/\//\\\//g')
-      sed -i -- "/<profiles>/ s/.*/${C}&/" /home/jboss/.m2/settings.xml
+
+      sed -i -- "/<\/proxies>/ s/.*/${C}&/" /home/jboss/.m2/settings.xml
   fi
 
   if [ -z "$MAVEN_ARGS" ]; then
