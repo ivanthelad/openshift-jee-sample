@@ -42,7 +42,7 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
  ##                ]
  ##            }
 
- CONTENT="<proxies>
+ CONTENT="
     <proxy>
       <id>myproxy</id>
       <active>true</active>
@@ -62,7 +62,7 @@ ARTIFACT_DIR=${ARTIFACT_DIR-target}
        <password>${CUSTOM_PROXY_PASSWORD}</password>
        <username>${CUSTOM_PROXY_USER}</username>
     </proxy>
-  </proxies>"
+  "
 
 function copy_artifacts() {
   if [ -d $LOCAL_SOURCE_DIR/$1 ]; then
@@ -89,9 +89,7 @@ if [ -f "$LOCAL_SOURCE_DIR/pom.xml" ]; then
     echo using proxy environment variables
       C=$(echo $CONTENT | sed 's/\//\\\//g')
 
-      sed -i 's/<proxies>//g' /home/jboss/.m2/settings.xml
-      sed -i 's/<\/proxies>//g' /home/jboss/.m2/settings.xml
-      sed -i -- "/<profiles>/ s/.*/${C}&/" /home/jboss/.m2/settings.xml
+      sed -i -- "/<\/proxies>/ s/.*/${C}&/" /home/jboss/.m2/settings.xml
   fi
 
   if [ -z "$MAVEN_ARGS" ]; then
